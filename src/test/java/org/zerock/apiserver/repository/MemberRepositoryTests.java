@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.zerock.apiserver.domain.Member;
 import org.zerock.apiserver.domain.MemberRole;
 
+import java.util.Optional;
+
 @SpringBootTest
 @Log4j2
 public class MemberRepositoryTests {
@@ -45,6 +47,24 @@ public class MemberRepositoryTests {
 
     @Test
     public void testRead() {
+        Long mno = 1L;
+        Optional<Member> member = memberRepository.findById(mno);
+
+        if (member.isPresent()) {
+            log.info(member);
+        }
+    }
+
+    @Test
+    public void testReadByEmail() {
+        String email = "user10@test.com";
+        Member member = memberRepository.findByEmail(email);
+
+        log.info(member);
+    }
+
+    @Test
+    public void testReadWithRoles() {
         String email = "user10@test.com";
         Member member = memberRepository.getWithRoles(email);
 
