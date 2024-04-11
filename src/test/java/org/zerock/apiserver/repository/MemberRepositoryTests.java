@@ -21,8 +21,8 @@ public class MemberRepositoryTests {
     @Test
     public void testInsertMember() {
         for (int i = 1; i <= 10 ; i++) {
+            String email = "user" + i + "@test.com";
             Member member = Member.builder()
-                    .email("user" + i + "@test.com")
                     .password(passwordEncoder.encode("1234"))
                     .nickname("USER" + i)
                     .build();
@@ -36,7 +36,9 @@ public class MemberRepositoryTests {
                 member.addRole(MemberRole.ADMIN);
             }
 
-            memberRepository.save(member);
+            if (!memberRepository.existsByEmail(email)) {
+                memberRepository.save(member);
+            }
         }
     }
 
