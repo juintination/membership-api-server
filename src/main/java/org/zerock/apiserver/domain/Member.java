@@ -40,6 +40,10 @@ public class Member {
         memberRoleList.clear();
     }
 
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
     public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
