@@ -30,7 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
 
         MemberDTO memberDTO = new MemberDTO(
-                member.getMno(),
                 member.getEmail(),
                 member.getPassword(),
                 member.getNickname(),
