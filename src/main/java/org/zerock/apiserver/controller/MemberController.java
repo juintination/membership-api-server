@@ -18,6 +18,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/{mno}")
     public MemberDTO get(@PathVariable("mno") Long mno) {
         return memberService.get(mno);
