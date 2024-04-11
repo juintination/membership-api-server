@@ -23,6 +23,7 @@ public class MemberRepositoryTests {
         for (int i = 1; i <= 10 ; i++) {
             String email = "user" + i + "@test.com";
             Member member = Member.builder()
+                    .email(email)
                     .password(passwordEncoder.encode("1234"))
                     .nickname("USER" + i)
                     .build();
