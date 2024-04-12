@@ -9,6 +9,7 @@ import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.dto.MemberModifyDTO;
 import org.zerock.apiserver.repository.MemberRepository;
+import org.zerock.apiserver.util.MemberServiceException;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,17 +30,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Long getMno(String email) throws Exception {
+    public Long getMno(String email) {
         Optional<Member> result = Optional.ofNullable(memberRepository.findByEmail(email));
         Member member = result.orElseThrow();
         return member.getMno();
     }
 
     @Override
-    public Long register(MemberDTO memberDTO) throws Exception {
+    public Long register(MemberDTO memberDTO) throws MemberServiceException {
 
         if (memberRepository.existsByEmail(memberDTO.getEmail())) {
-            throw new Exception("이미 존재하는 이메일입니다.");
+            throw new MemberServiceException("EMAIL_ALREADY_EXISTS");
         }
 
         Member member = memberRepository.save(dtoToEntityForSignup(memberDTO));
@@ -47,13 +48,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void modify(MemberModifyDTO memberModifyDTO) throws Exception {
+    public void modify(MemberModifyDTO memberModifyDTO) throws MemberServiceException {
         Optional<Member> result = memberRepository.findById(memberModifyDTO.getMno());
         Member member = result.orElseThrow();
 
         if (!passwordEncoder.matches(memberModifyDTO.getOldPassword(), member.getPassword())) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberServiceException("WRONG_PASSWORD");
         }
+
         member.changeEmail(memberModifyDTO.getEmail());
         member.changePassword(passwordEncoder.encode(memberModifyDTO.getPassword()));
         member.changeNickname(memberModifyDTO.getNickname());

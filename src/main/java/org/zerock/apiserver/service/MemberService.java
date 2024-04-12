@@ -12,11 +12,11 @@ public interface MemberService {
 
     MemberDTO get(Long mno);
 
-    Long getMno(String email) throws Exception;
+    Long getMno(String email);
 
-    Long register(MemberDTO memberDTO) throws Exception;
+    Long register(MemberDTO memberDTO);
 
-    void modify(MemberModifyDTO modifyDTO) throws Exception;
+    void modify(MemberModifyDTO modifyDTO);
 
     void remove(Long mno);
 
