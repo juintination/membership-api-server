@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.dto.MemberModifyDTO;
 import org.zerock.apiserver.service.MemberService;
+import org.zerock.apiserver.util.CustomJWTException;
+import org.zerock.apiserver.util.JWTUtil;
 
 import java.util.Map;
 
@@ -41,6 +43,52 @@ public class MemberController {
     public Map<String, String> remove(@PathVariable("mno") Long mno) {
         memberService.remove(mno);
         return Map.of("RESULT", "SUCCESS");
+    }
+
+    @RequestMapping("/refresh")
+    public Map<String, Object> refresh(@RequestHeader("Authorization") String authHeader, String refreshToken) {
+
+        if (refreshToken == null) {
+            throw new CustomJWTException("NULL_REFRESH");
+        }
+
+        if (authHeader == null || authHeader.length() < 7) {
+            throw new CustomJWTException("INVALID_STRING");
+        }
+
+        String accessToken = authHeader.substring(7);
+
+        // accessToken이 만료되지 않았다면
+        if (!checkExpiredToken(accessToken)) {
+            return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
+        }
+
+        // refreshToken 검증
+        Map<String, Object> claims = JWTUtil.validateToken(refreshToken);
+
+        log.info("refresh ... claims: " + claims);
+
+        String newAccessToken = JWTUtil.generateToken(claims, 10);
+        String newRefreshToken = checkTime((Integer) claims.get("exp")) ? JWTUtil.generateToken(claims, 60 * 24) : refreshToken;
+        return Map.of("accessToken", newAccessToken, "refreshToken", newRefreshToken);
+    }
+
+    private boolean checkTime(Integer exp) {
+        java.util.Date expDate = new java.util.Date((long) exp * (1000));
+        long gap = expDate.getTime() - System.currentTimeMillis();
+        long leftMin = gap / (1000 * 60);
+        return leftMin < 60;
+    }
+
+    private boolean checkExpiredToken(String token) {
+        try {
+            JWTUtil.validateToken(token);
+        } catch(CustomJWTException e) {
+            if (e.getMessage().equals("Expired")) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
