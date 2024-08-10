@@ -64,6 +64,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void remove(Long mno) {
+
+        if (!memberRepository.existsById(mno)) {
+            throw new MemberServiceException("NOT_EXIST_MEMBER");
+        }
+
         memberRepository.deleteById(mno);
     }
 
