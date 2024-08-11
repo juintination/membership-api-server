@@ -23,9 +23,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO get(Long mno) {
-        return memberRepository.findById(mno)
-                .map(this::entityToDTO)
-                .orElseThrow(() -> new MemberServiceException("NOT_EXIST_MEMBER"));
+        Optional<Member> result = memberRepository.findById(mno);
+        Member member = result.orElseThrow();
+        return entityToDTO(member);
     }
 
     @Override
