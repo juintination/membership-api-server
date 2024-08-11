@@ -1,6 +1,8 @@
 package org.zerock.apiserver.repository;
 
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,13 @@ public class MemberRepositoryTests {
     private PasswordEncoder passwordEncoder;
 
     @Test
+    public void testIsNull() {
+        Assertions.assertNotNull(memberRepository);
+        log.info(memberRepository.getClass().getName());
+    }
+
+    @Test
+    @BeforeEach
     public void testInsertMember() {
         for (int i = 1; i <= 10 ; i++) {
             String email = "user" + i + "@test.com";
