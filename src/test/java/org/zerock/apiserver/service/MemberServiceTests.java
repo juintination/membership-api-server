@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.apiserver.dto.MemberDTO;
-import org.zerock.apiserver.dto.MemberModifyDTO;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -27,25 +27,28 @@ public class MemberServiceTests {
     @Test
     public void testModify() throws Exception {
         Long mno = 2L;
-        MemberModifyDTO memberModifyDTO = MemberModifyDTO.builder()
+        MemberDTO memberDTO = MemberDTO.builder()
                 .mno(mno)
                 .email("modifiedUser2@test.com")
-                .oldPassword("1234")
                 .password("1234")
                 .nickname("modifiedUser2")
                 .build();
-        memberService.modify(memberModifyDTO);
+        memberService.modify(memberDTO);
 
-        MemberDTO memberDTO = memberService.get(mno);
-        log.info(memberDTO);
+        MemberDTO result = memberService.get(mno);
+        log.info(result);
     }
 
     @Test
     public void testRegister() throws Exception {
         String email = "testRemove@test.com";
-        List<String> roleNames = new ArrayList<>();
-        roleNames.add("USER");
-        MemberDTO memberDTO = new MemberDTO(email, "1234", "tempUser", false, roleNames);
+        List<String> roleNames = new ArrayList<>(Collections.singletonList("USER"));
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email(email)
+                .password("1234")
+                .nickname("tempUser")
+                .roleNames(roleNames)
+                .build();
         Long mno = memberService.register(memberDTO);
         log.info("mno: " + mno);
         log.info(memberService.get(mno));

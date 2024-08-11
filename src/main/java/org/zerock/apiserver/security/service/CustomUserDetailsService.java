@@ -1,4 +1,4 @@
-package org.zerock.apiserver.security;
+package org.zerock.apiserver.security.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -7,10 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.zerock.apiserver.domain.Member;
-import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.repository.MemberRepository;
-
-import java.util.stream.Collectors;
+import org.zerock.apiserver.security.dto.CustomUserDetails;
 
 @Service
 @Log4j2
@@ -25,21 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("----------------------loadUserByUsername----------------------");
 
         Member member = memberRepository.getWithRoles(username);
+
         if (member == null) {
-            throw new UsernameNotFoundException("Not Found");
+            throw new UsernameNotFoundException("User not found with username: " + username);
         }
 
-        MemberDTO memberDTO = new MemberDTO(
-                member.getEmail(),
-                member.getPassword(),
-                member.getNickname(),
-                member.isSocial(),
-                member.getMemberRoleList().stream()
-                        .map(Enum::name)
-                        .collect(Collectors.toList()));
-
-        log.info(memberDTO);
-        return memberDTO;
+        log.info("loadUserByUsername: " + member);
+        return new CustomUserDetails(member);
 
     }
 

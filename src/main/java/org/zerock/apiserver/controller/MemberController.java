@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.apiserver.dto.MemberDTO;
-import org.zerock.apiserver.dto.MemberModifyDTO;
 import org.zerock.apiserver.service.MemberService;
 import org.zerock.apiserver.util.CustomJWTException;
 import org.zerock.apiserver.util.JWTUtil;
@@ -33,7 +32,7 @@ public class MemberController {
     }
 
     @PutMapping("/{mno}")
-    public Map<String, String> modify(@PathVariable("mno") Long mno, @RequestBody MemberModifyDTO dto) throws Exception {
+    public Map<String, String> modify(@PathVariable("mno") Long mno, @RequestBody MemberDTO dto) throws Exception {
         dto.setMno(mno);
         memberService.modify(dto);
         return Map.of("RESULT", "SUCCESS");

@@ -9,7 +9,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.zerock.apiserver.dto.MemberDTO;
+import org.zerock.apiserver.domain.Member;
+import org.zerock.apiserver.security.dto.CustomUserDetails;
 import org.zerock.apiserver.util.JWTUtil;
 
 import java.io.IOException;
@@ -50,19 +51,21 @@ public class JWTCheckFilter extends OncePerRequestFilter {
 
             log.info("JWT claims: " + claims);
 
+            long mno = Long.parseLong(claims.get("mno").toString());
             String email = (String) claims.get("email");
             String nickname = (String) claims.get("nickname");
             Boolean social = (Boolean) claims.get("social");
             List<String> roleNames = (List<String>) claims.get("roleNames");
 
-            MemberDTO memberDTO = new MemberDTO(email, "", nickname, social, roleNames);
+            Member member = Member.builder().mno(mno).build();
+            CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
             log.info("-----------------------------------");
-            log.info(memberDTO);
-            log.info(memberDTO.getAuthorities());
+            log.info(customUserDetails);
+            log.info(customUserDetails.getAuthorities());
 
             UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(memberDTO, "", memberDTO.getAuthorities());
+                    = new UsernamePasswordAuthenticationToken(customUserDetails, "", customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             filterChain.doFilter(request, response);

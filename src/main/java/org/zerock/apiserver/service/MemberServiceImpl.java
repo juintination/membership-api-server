@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.zerock.apiserver.domain.Member;
 import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
-import org.zerock.apiserver.dto.MemberModifyDTO;
 import org.zerock.apiserver.repository.MemberRepository;
 import org.zerock.apiserver.util.MemberServiceException;
 
@@ -43,22 +42,17 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberServiceException("EMAIL_ALREADY_EXISTS");
         }
 
-        Member member = memberRepository.save(dtoToEntityForSignup(memberDTO));
+        Member member = memberRepository.save(dtoToEntity(memberDTO));
         return member.getMno();
     }
 
     @Override
-    public void modify(MemberModifyDTO memberModifyDTO) throws MemberServiceException {
-        Optional<Member> result = memberRepository.findById(memberModifyDTO.getMno());
+    public void modify(MemberDTO memberDTO) throws MemberServiceException {
+        Optional<Member> result = memberRepository.findById(memberDTO.getMno());
         Member member = result.orElseThrow();
-
-        if (!passwordEncoder.matches(memberModifyDTO.getOldPassword(), member.getPassword())) {
-            throw new MemberServiceException("WRONG_PASSWORD");
-        }
-
-        member.changeEmail(memberModifyDTO.getEmail());
-        member.changePassword(passwordEncoder.encode(memberModifyDTO.getPassword()));
-        member.changeNickname(memberModifyDTO.getNickname());
+        member.changeEmail(memberDTO.getEmail());
+        member.changePassword(passwordEncoder.encode(memberDTO.getPassword()));
+        member.changeNickname(memberDTO.getNickname());
         memberRepository.save(member);
     }
 
@@ -72,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.deleteById(mno);
     }
 
-    private Member dtoToEntityForSignup(MemberDTO memberDTO) {
+    private Member dtoToEntity(MemberDTO memberDTO) {
         return Member.builder()
                 .email(memberDTO.getEmail())
                 .password(passwordEncoder.encode(memberDTO.getPassword()))

@@ -3,7 +3,6 @@ package org.zerock.apiserver.service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zerock.apiserver.domain.Member;
 import org.zerock.apiserver.dto.MemberDTO;
-import org.zerock.apiserver.dto.MemberModifyDTO;
 
 import java.util.stream.Collectors;
 
@@ -16,18 +15,20 @@ public interface MemberService {
 
     Long register(MemberDTO memberDTO);
 
-    void modify(MemberModifyDTO modifyDTO);
+    void modify(MemberDTO modifyDTO);
 
     void remove(Long mno);
 
     default MemberDTO entityToDTO(Member member) {
-        return new MemberDTO(
-                member.getEmail(),
-                member.getPassword(),
-                member.getNickname(),
-                member.isSocial(),
-                member.getMemberRoleList().stream()
-                        .map(memberRole -> memberRole.name()).collect(Collectors.toList()));
+        return MemberDTO.builder()
+                .mno(member.getMno())
+                .email(member.getEmail())
+                .password(member.getPassword())
+                .nickname(member.getNickname())
+                .social(member.isSocial())
+                .roleNames(member.getMemberRoleList().stream()
+                        .map(Enum::name).collect(Collectors.toList()))
+                .build();
     }
 
 }
