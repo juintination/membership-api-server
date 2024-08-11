@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.zerock.apiserver.domain.Member;
+import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.security.dto.CustomUserDetails;
 import org.zerock.apiserver.util.JWTUtil;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class JWTCheckFilter extends OncePerRequestFilter {
@@ -56,8 +58,17 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String nickname = (String) claims.get("nickname");
             Boolean social = (Boolean) claims.get("social");
             List<String> roleNames = (List<String>) claims.get("roleNames");
+            List<MemberRole> memberRoleList = roleNames.stream().map(MemberRole::valueOf).collect(Collectors.toList());
 
-            Member member = Member.builder().mno(mno).build();
+            Member member = Member.builder()
+                    .mno(mno)
+                    .email(email)
+                    .nickname(nickname)
+                    .social(social)
+                    .memberRoleList(memberRoleList)
+                    .build();
+            log.info("Member: " + member);
+
             CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
             log.info("-----------------------------------");
