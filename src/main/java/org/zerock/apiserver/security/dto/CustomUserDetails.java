@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.zerock.apiserver.domain.Member;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -24,8 +23,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return member.getMemberRoleList().stream().map(str ->
-                new SimpleGrantedAuthority("ROLE_" + str)).collect(Collectors.toList());
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + member.getMemberRole()));
     }
 
     @Override
@@ -64,7 +62,7 @@ public class CustomUserDetails implements UserDetails {
         dataMap.put("email", member.getEmail());
         dataMap.put("nickname", member.getNickname());
         dataMap.put("social", member.isSocial());
-        dataMap.put("roleNames", member.getMemberRoleList());
+        dataMap.put("role", member.getMemberRole().toString());
         return dataMap;
     }
 }

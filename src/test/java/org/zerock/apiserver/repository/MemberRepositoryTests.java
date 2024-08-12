@@ -37,15 +37,15 @@ public class MemberRepositoryTests {
                     .email(email)
                     .password(passwordEncoder.encode("1234"))
                     .nickname("USER" + i)
+                    .memberRole(MemberRole.USER)
                     .build();
-            member.addRole(MemberRole.USER);
 
             if (i >= 5) {
-                member.addRole(MemberRole.MANAGER);
+                member.changeRole(MemberRole.MANAGER);
             }
 
             if (i >= 8) {
-                member.addRole(MemberRole.ADMIN);
+                member.changeRole(MemberRole.ADMIN);
             }
 
             if (!memberRepository.existsByEmail(email)) {
@@ -75,10 +75,10 @@ public class MemberRepositoryTests {
     @Test
     public void testReadWithRoles() {
         String email = "user10@test.com";
-        Member member = memberRepository.getWithRoles(email);
+        Member member = memberRepository.findByEmail(email);
 
         log.info(member);
-        log.info(member.getMemberRoleList());
+        log.info(member.getMemberRole());
     }
 
 }

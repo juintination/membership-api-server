@@ -4,8 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zerock.apiserver.domain.Member;
 import org.zerock.apiserver.dto.MemberDTO;
 
-import java.util.stream.Collectors;
-
 @Transactional
 public interface MemberService {
 
@@ -26,8 +24,7 @@ public interface MemberService {
                 .password(member.getPassword())
                 .nickname(member.getNickname())
                 .social(member.isSocial())
-                .roleNames(member.getMemberRoleList().stream()
-                        .map(Enum::name).collect(Collectors.toList()))
+                .role(member.getMemberRole())
                 .build();
     }
 

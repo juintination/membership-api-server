@@ -57,15 +57,15 @@ public class JWTCheckFilter extends OncePerRequestFilter {
             String email = (String) claims.get("email");
             String nickname = (String) claims.get("nickname");
             Boolean social = (Boolean) claims.get("social");
-            List<String> roleNames = (List<String>) claims.get("roleNames");
-            List<MemberRole> memberRoleList = roleNames.stream().map(MemberRole::valueOf).collect(Collectors.toList());
+            String role = (String) claims.get("role");
+            MemberRole memberRole = MemberRole.valueOf(role);
 
             Member member = Member.builder()
                     .mno(mno)
                     .email(email)
                     .nickname(nickname)
                     .social(social)
-                    .memberRoleList(memberRoleList)
+                    .memberRole(memberRole)
                     .build();
             log.info("Member: " + member);
 

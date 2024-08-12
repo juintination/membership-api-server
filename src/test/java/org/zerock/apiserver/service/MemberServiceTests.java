@@ -6,12 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.util.MemberServiceException;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @SpringBootTest
 @Log4j2
@@ -30,12 +27,11 @@ public class MemberServiceTests {
     @BeforeEach
     public void testRegister() {
         String email = "sample@example.com";
-        List<String> roleNames = new ArrayList<>(Collections.singletonList("USER"));
         MemberDTO memberDTO = MemberDTO.builder()
                 .email(email)
                 .password("1234")
                 .nickname("SampleUser")
-                .roleNames(roleNames)
+                .role(MemberRole.USER)
                 .build();
         Long mno = memberService.register(memberDTO);
         log.info("mno: " + mno);
@@ -57,6 +53,8 @@ public class MemberServiceTests {
                 .email("Modified@example.com")
                 .password("NewPassword")
                 .nickname("ModifiedUser")
+                .social(true)
+                .role(MemberRole.MANAGER)
                 .build();
         memberService.modify(memberDTO);
 
@@ -66,13 +64,6 @@ public class MemberServiceTests {
 
     @Test
     public void testRemove() {
-        String email = "sample@example.com";
-        Long mno = memberService.getMno(email);
-        memberService.remove(mno);
-    }
-
-    @Test
-    public void testWithCopilot() {
         String email = "sample@example.com";
         Long mno = memberService.getMno(email);
         memberService.remove(mno);

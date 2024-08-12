@@ -1,8 +1,7 @@
 package org.zerock.apiserver.dto;
 
 import lombok.*;
-
-import java.util.List;
+import org.zerock.apiserver.domain.MemberRole;
 
 @Data
 @ToString
@@ -21,6 +20,6 @@ public class MemberDTO {
 
     private boolean social;
 
-    private List<String> roleNames;
+    private MemberRole role;
 
 }

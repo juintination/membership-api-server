@@ -5,13 +5,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.zerock.apiserver.domain.Member;
-import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.repository.MemberRepository;
 import org.zerock.apiserver.util.MemberServiceException;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -72,8 +70,7 @@ public class MemberServiceImpl implements MemberService {
                 .password(passwordEncoder.encode(memberDTO.getPassword()))
                 .nickname(memberDTO.getNickname())
                 .social(memberDTO.isSocial())
-                .memberRoleList(memberDTO.getRoleNames().stream()
-                        .map(memberRole -> MemberRole.valueOf(memberRole.toUpperCase())).collect(Collectors.toList()))
+                .memberRole(memberDTO.getRole())
                 .build();
     }
 
