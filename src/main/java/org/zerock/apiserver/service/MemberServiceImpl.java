@@ -48,9 +48,28 @@ public class MemberServiceImpl implements MemberService {
     public void modify(MemberDTO memberDTO) throws MemberServiceException {
         Optional<Member> result = memberRepository.findById(memberDTO.getMno());
         Member member = result.orElseThrow();
-        member.changeEmail(memberDTO.getEmail());
-        member.changePassword(passwordEncoder.encode(memberDTO.getPassword()));
-        member.changeNickname(memberDTO.getNickname());
+
+        log.info("memberDTO: " + memberDTO);
+
+        if (memberDTO.getEmail() != null && !memberDTO.getEmail().isEmpty()) {
+            if (!member.getEmail().equals(memberDTO.getEmail()) && memberRepository.existsByEmail(memberDTO.getEmail())) {
+                throw new MemberServiceException("EMAIL_ALREADY_EXISTS");
+            }
+            try {
+                member.changeEmail(memberDTO.getEmail());
+            } catch (IllegalArgumentException e) {
+                throw new MemberServiceException("INVALID_EMAIL");
+            }
+        }
+
+        if (memberDTO.getPassword() != null && !memberDTO.getPassword().isEmpty()) {
+            member.changePassword(passwordEncoder.encode(memberDTO.getPassword()));
+        }
+
+        if (memberDTO.getNickname() != null && !memberDTO.getNickname().isEmpty()) {
+            member.changeNickname(memberDTO.getNickname());
+        }
+
         memberRepository.save(member);
     }
 
