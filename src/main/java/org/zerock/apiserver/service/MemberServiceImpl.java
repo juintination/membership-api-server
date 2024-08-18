@@ -83,6 +83,14 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.deleteById(mno);
     }
 
+    @Override
+    public void checkPassword(Long mno, String password) {
+        Member member = memberRepository.findById(mno).orElseThrow(() -> new MemberServiceException("NOT_EXIST_MEMBER"));
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new MemberServiceException("INVALID_PASSWORD");
+        }
+    }
+
     private Member dtoToEntity(MemberDTO memberDTO) {
         return Member.builder()
                 .email(memberDTO.getEmail())

@@ -44,6 +44,12 @@ public class MemberController {
         return Map.of("RESULT", "SUCCESS");
     }
 
+    @PostMapping("/checkPassword")
+    public Map<String, String> checkPassword(@RequestBody MemberDTO dto) {
+        memberService.checkPassword(dto.getMno(), dto.getPassword());
+        return Map.of("RESULT", "SUCCESS");
+    }
+
     @RequestMapping("/refresh")
     public Map<String, Object> refresh(@RequestHeader("Authorization") String authHeader, String refreshToken) {
 
