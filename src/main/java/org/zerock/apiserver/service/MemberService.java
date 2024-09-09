@@ -11,6 +11,8 @@ public interface MemberService {
 
     Long getMno(String email);
 
+    boolean existsByEmail(String email);
+
     Long register(MemberDTO memberDTO);
 
     void modify(MemberDTO modifyDTO);

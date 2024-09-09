@@ -1,5 +1,6 @@
 package org.zerock.apiserver.service;
 
+import com.github.javafaker.Faker;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,10 @@ public class MemberServiceTests {
     @BeforeEach
     public void testRegister() {
         String email = "sample@example.com";
+        if (memberService.existsByEmail(email)) {
+            email = new Faker().internet().emailAddress();
+        }
+
         MemberDTO memberDTO = MemberDTO.builder()
                 .email(email)
                 .password("1234")

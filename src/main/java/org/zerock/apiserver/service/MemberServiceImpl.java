@@ -29,14 +29,19 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Long getMno(String email) {
         Optional<Member> result = Optional.ofNullable(memberRepository.findByEmail(email));
-        Member member = result.orElseThrow();
+        Member member = result.orElseThrow(() -> new MemberServiceException("NO_EMAIL_EXISTS"));
         return member.getMno();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
     @Override
     public Long register(MemberDTO memberDTO) throws MemberServiceException {
 
-        if (memberRepository.existsByEmail(memberDTO.getEmail())) {
+        if (existsByEmail(memberDTO.getEmail())) {
             throw new MemberServiceException("EMAIL_ALREADY_EXISTS");
         }
 
@@ -52,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
         log.info("memberDTO: " + memberDTO);
 
         if (memberDTO.getEmail() != null && !memberDTO.getEmail().isEmpty()) {
-            if (!member.getEmail().equals(memberDTO.getEmail()) && memberRepository.existsByEmail(memberDTO.getEmail())) {
+            if (!member.getEmail().equals(memberDTO.getEmail()) && existsByEmail(memberDTO.getEmail())) {
                 throw new MemberServiceException("EMAIL_ALREADY_EXISTS");
             }
             try {
