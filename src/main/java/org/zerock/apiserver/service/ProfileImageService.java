@@ -10,6 +10,10 @@ public interface ProfileImageService {
 
     ProfileImageDTO get(Long ino);
 
+    ProfileImageDTO getByMno(Long mno);
+
+    boolean existsByMno(Long mno);
+
     Long register(ProfileImageDTO profileImageDTO);
 
     void remove(Long ino);

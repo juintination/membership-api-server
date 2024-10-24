@@ -19,13 +19,13 @@ import java.util.Map;
 @RequestMapping("/api/profiles/image")
 public class ProfileImageController {
 
-    private final ProfileImageService imageService;
+    private final ProfileImageService profileImageService;
 
     private final CustomFileUtil fileUtil;
 
     @GetMapping("/{pino}")
     public ProfileImageDTO get(@PathVariable("pino") Long pino) {
-        return imageService.get(pino);
+        return profileImageService.get(pino);
     }
 
     @GetMapping("/view/{pino}")
@@ -36,12 +36,18 @@ public class ProfileImageController {
 
     @PostMapping("/")
     public Map<String, Long> register(ProfileImageDTO profileImageDTO) throws IOException {
+
+        if (profileImageService.existsByMno(profileImageDTO.getMno())) {
+            ProfileImageDTO existingProfileImage = profileImageService.getByMno(profileImageDTO.getMno());
+            fileUtil.deleteFile(existingProfileImage.getFileName());
+        }
+
         MultipartFile file = profileImageDTO.getFile();
         String uploadFileName = fileUtil.saveFile(file);
         profileImageDTO.setFileName(uploadFileName);
         log.info("-------------------------------------");
         log.info(uploadFileName);
-        Long ino = imageService.register(profileImageDTO);
+        Long ino = profileImageService.register(profileImageDTO);
 
         try {
             Thread.sleep(2000);
@@ -54,8 +60,8 @@ public class ProfileImageController {
 
     @DeleteMapping("/{pino}")
     public Map<String, String> remove(@PathVariable(name="pino") Long pino) {
-        String oldFileName = imageService.get(pino).getFileName();
-        imageService.remove(pino);
+        String oldFileName = profileImageService.get(pino).getFileName();
+        profileImageService.remove(pino);
         fileUtil.deleteFile(oldFileName);
         return Map.of("RESULT", "SUCCESS");
     }

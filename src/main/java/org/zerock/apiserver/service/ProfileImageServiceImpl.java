@@ -28,6 +28,22 @@ public class ProfileImageServiceImpl implements ProfileImageService {
     }
 
     @Override
+    public ProfileImageDTO getByMno(Long mno) {
+        Object result = profileImageRepository.getProfileImageByMno(mno);
+        if (result == null) {
+            throw new CustomServiceException("NOT_EXIST_IMAGE");
+        }
+
+        Object[] arr = (Object[]) result;
+        return entityToDTO((ProfileImage) arr[0], (Member) arr[1]);
+    }
+
+    @Override
+    public boolean existsByMno(Long mno) {
+        return profileImageRepository.existsByMno(mno);
+    }
+
+    @Override
     public Long register(ProfileImageDTO profileImageDTO) {
         ProfileImage existingProfileImage = profileImageRepository.findByMno(profileImageDTO.getMno());
         if (existingProfileImage != null) {

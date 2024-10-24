@@ -16,6 +16,9 @@ public interface ProfileImageRepository extends JpaRepository<ProfileImage, Long
     @Query("SELECT p FROM ProfileImage p WHERE p.member.mno = :mno")
     ProfileImage findByMno(@Param("mno") Long mno);
 
+    @Query("SELECT COUNT(p) > 0 FROM ProfileImage p WHERE p.member.mno = :mno")
+    boolean existsByMno(@Param("mno") Long mno);
+
     @Query("SELECT p, m " +
             " FROM ProfileImage p LEFT JOIN p.member m " +
             " WHERE p.pino = :pino")
