@@ -29,7 +29,6 @@ public class Member {
     private MemberRole memberRole = MemberRole.USER;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "pino")
     private ProfileImage profileImage;
 
     public void changeRole(MemberRole memberRole) {

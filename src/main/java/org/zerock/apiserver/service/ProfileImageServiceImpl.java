@@ -29,9 +29,20 @@ public class ProfileImageServiceImpl implements ProfileImageService {
 
     @Override
     public Long register(ProfileImageDTO profileImageDTO) {
-        ProfileImage profileImage = dtoToEntity(profileImageDTO);
-        ProfileImage result = profileImageRepository.save(profileImage);
-        return result.getPino();
+        ProfileImage existingProfileImage = profileImageRepository.findByMno(profileImageDTO.getMno());
+        if (existingProfileImage != null) {
+            log.info("remove existing profile image: " + existingProfileImage);
+            existingProfileImage.getMember().removeMemberAssociation();
+            profileImageRepository.delete(existingProfileImage);
+        }
+
+        if (profileImageRepository.findByMno(profileImageDTO.getMno()) == null) {
+            ProfileImage profileImage = dtoToEntity(profileImageDTO);
+            ProfileImage result = profileImageRepository.save(profileImage);
+            return result.getPino();
+        } else {
+            throw new CustomServiceException("ERROR_PROFILE_IMAGE");
+        }
     }
 
     @Override
