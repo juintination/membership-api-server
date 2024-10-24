@@ -28,6 +28,11 @@ public class ProfileImageController {
         return profileImageService.get(pino);
     }
 
+    @GetMapping("/member/{mno}")
+    public ProfileImageDTO getByMno(@PathVariable("mno") Long mno) {
+        return profileImageService.getByMno(mno);
+    }
+
     @GetMapping("/view/{pino}")
     public ResponseEntity<Resource> viewFileGET(@PathVariable("pino") Long pino) {
         String fileName = get(pino).getFileName();
