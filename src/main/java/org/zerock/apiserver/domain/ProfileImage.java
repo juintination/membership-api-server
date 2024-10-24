@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "member")
 public class ProfileImage {
 
     @Id
@@ -17,5 +17,9 @@ public class ProfileImage {
 
     @Column(nullable = false)
     private String fileName;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
 }

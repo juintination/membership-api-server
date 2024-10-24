@@ -19,9 +19,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             " GROUP BY m, p")
     Object getMemberByMno(@Param("mno") Long mno);
 
-    @Query("SELECT m " +
-            " FROM Member m LEFT JOIN FETCH m.profileImage p " +
-            " WHERE m.mno = :mno")
-    Member findByMno(@Param("mno") Long mno);
-
 }

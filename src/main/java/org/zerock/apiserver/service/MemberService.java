@@ -24,8 +24,7 @@ public interface MemberService {
 
     Member dtoToEntity(MemberDTO memberDTO);
 
-    default MemberDTO entityToDTO(Member member) {
-        ProfileImage profileImage = member.getProfileImage();
+    default MemberDTO entityToDTO(Member member, ProfileImage profileImage) {
         Long pino = profileImage != null ? profileImage.getPino() : null;
         return MemberDTO.builder()
                 .mno(member.getMno())

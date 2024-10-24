@@ -2,6 +2,8 @@ package org.zerock.apiserver.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.zerock.apiserver.domain.Member;
@@ -25,11 +27,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberDTO get(Long mno) {
-        Member member = memberRepository.findByMno(mno);
-        if (member == null) {
+        Object result = memberRepository.getMemberByMno(mno);
+        if (result == null) {
             throw new CustomServiceException("NOT_EXIST_MEMBER");
         }
-        return entityToDTO(member);
+
+        Object[] arr = (Object[]) result;
+        return entityToDTO((Member) arr[0], (ProfileImage) arr[1]);
     }
 
     @Override
@@ -55,10 +59,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void modify(MemberDTO memberDTO) throws CustomServiceException {
-        Member member = memberRepository.findByMno(memberDTO.getMno());
-        if (member == null) {
-            throw new CustomServiceException("NOT_EXIST_MEMBER");
-        }
+        Member member = memberRepository.findById(memberDTO.getMno()).orElseThrow(() -> new CustomServiceException("NOT_EXIST_MEMBER"));
 
         log.info("memberDTO: " + memberDTO);
 
@@ -101,18 +102,21 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void checkPassword(Long mno, String password) {
-        Member member = memberRepository.findByMno(mno);
-        if (member == null) {
-            throw new CustomServiceException("NOT_EXIST_MEMBER");
-        }
+        Member member = memberRepository.findById(mno).orElseThrow(() -> new CustomServiceException("NOT_EXIST_MEMBER"));
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new CustomServiceException("INVALID_PASSWORD");
         }
     }
 
     public Member dtoToEntity(MemberDTO memberDTO) {
+
         ProfileImage profileImage = memberDTO.getPino() != null ? profileImageService.dtoToEntity(profileImageService.get(memberDTO.getPino())) : null;
+        if (memberDTO.getPino() != null && profileImage == null) {
+            throw new CustomServiceException("PROFILE_IMAGE_NOT_FOUND");
+        }
+
         return Member.builder()
+                .mno(memberDTO.getMno())
                 .email(memberDTO.getEmail())
                 .password(passwordEncoder.encode(memberDTO.getPassword()))
                 .nickname(memberDTO.getNickname())

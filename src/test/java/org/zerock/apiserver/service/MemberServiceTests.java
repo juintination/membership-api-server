@@ -39,12 +39,6 @@ public class MemberServiceTests {
     @BeforeEach
     public void testRegister() {
 
-        ProfileImageDTO imageDTO = ProfileImageDTO.builder()
-                .fileName(UUID.randomUUID() + "_" + "IMAGE.png")
-                .build();
-        Long pino = profileImageService.register(imageDTO);
-        log.info(pino);
-
         String email = "sample@example.com";
         if (memberService.existsByEmail(email)) {
             email = new Faker().internet().emailAddress();
@@ -54,9 +48,9 @@ public class MemberServiceTests {
                 .email(email)
                 .password(faker.internet().password())
                 .nickname(faker.name().name())
-                .pino(pino)
                 .role(MemberRole.USER)
                 .build();
+
         Long mno = memberService.register(memberDTO);
         log.info("mno: " + mno);
         log.info(memberService.get(mno));
@@ -72,14 +66,15 @@ public class MemberServiceTests {
     @Test
     public void testModify() {
 
-        ProfileImageDTO imageDTO = ProfileImageDTO.builder()
-                .fileName("MODIFIED_IMAGE.png")
-                .build();
-        Long pino = profileImageService.register(imageDTO);
-        log.info(profileImageService.get(pino));
-
         Long mno = 1L;
         MemberDTO result = memberService.get(mno);
+
+        ProfileImageDTO profileImageDTO = ProfileImageDTO.builder()
+                .fileName(UUID.randomUUID() + "_" + "IMAGE.png")
+                .mno(mno)
+                .build();
+        Long pino = profileImageService.register(profileImageDTO);
+        log.info(profileImageService.get(pino));
 
         MemberDTO memberDTO = MemberDTO.builder()
                 .mno(mno)

@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ProfileImageDTO {
 
-    private Long pino;
+    private Long pino, mno;
 
     private String fileName;
 

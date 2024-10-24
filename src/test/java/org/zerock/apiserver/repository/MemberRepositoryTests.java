@@ -1,5 +1,6 @@
 package org.zerock.apiserver.repository;
 
+import com.github.javafaker.Faker;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,15 +45,10 @@ public class MemberRepositoryTests {
         for (int i = 1; i <= 10 ; i++) {
             String email = "user" + i + "@test.com";
 
-            ProfileImage profileImage = profileImageRepository.save(ProfileImage.builder()
-                    .fileName(UUID.randomUUID() + "_" + "IMAGE.png")
-                    .build());
-
             Member member = Member.builder()
                     .email(email)
-                    .password(passwordEncoder.encode("1234"))
+                    .password(passwordEncoder.encode(new Faker().internet().password()))
                     .nickname("USER" + i)
-                    .profileImage(profileImage)
                     .memberRole(MemberRole.USER)
                     .build();
 
@@ -65,6 +61,12 @@ public class MemberRepositoryTests {
             }
 
             if (!memberRepository.existsByEmail(email)) {
+                memberRepository.save(member);
+                ProfileImage profileImage = profileImageRepository.save(ProfileImage.builder()
+                        .fileName(UUID.randomUUID() + "_" + "IMAGE" + i + ".png")
+                        .member(member)
+                        .build());
+                member.changeProfileImage(profileImage);
                 memberRepository.save(member);
             }
         }
@@ -88,16 +90,6 @@ public class MemberRepositoryTests {
         Object result = memberRepository.getMemberByMno(mno);
         Object[] arr = (Object[]) result;
         log.info(Arrays.toString(arr));
-    }
-
-    @Test
-    public void testReadByMno() {
-        Long mno = 1L;
-        Member member = memberRepository.findByMno(mno);
-
-        log.info(member);
-        log.info(member.getMemberRole());
-        log.info(member.getProfileImage());
     }
 
     @Test

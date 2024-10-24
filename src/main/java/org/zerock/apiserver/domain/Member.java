@@ -28,8 +28,8 @@ public class Member {
     @Builder.Default
     private MemberRole memberRole = MemberRole.USER;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id")
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pino")
     private ProfileImage profileImage;
 
     public void changeRole(MemberRole memberRole) {
