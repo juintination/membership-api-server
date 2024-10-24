@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
-import org.zerock.apiserver.util.MemberServiceException;
+import org.zerock.apiserver.dto.ProfileImageDTO;
+import org.zerock.apiserver.util.CustomServiceException;
+
+import java.util.UUID;
 
 @SpringBootTest
 @Log4j2
@@ -18,15 +21,30 @@ public class MemberServiceTests {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private ProfileImageService profileImageService;
+
+    private final Faker faker = new Faker();
+
     @Test
     public void testIsNull() {
-        Assertions.assertNotNull(memberService);
+        Assertions.assertNotNull(memberService, "MemberService should not be null");
+        Assertions.assertNotNull(profileImageService, "ProfileImageService should not be null");
+
         log.info(memberService.getClass().getName());
+        log.info(profileImageService.getClass().getName());
     }
 
     @Test
     @BeforeEach
     public void testRegister() {
+
+        ProfileImageDTO imageDTO = ProfileImageDTO.builder()
+                .fileName(UUID.randomUUID() + "_" + "IMAGE.png")
+                .build();
+        Long pino = profileImageService.register(imageDTO);
+        log.info(pino);
+
         String email = "sample@example.com";
         if (memberService.existsByEmail(email)) {
             email = new Faker().internet().emailAddress();
@@ -34,8 +52,9 @@ public class MemberServiceTests {
 
         MemberDTO memberDTO = MemberDTO.builder()
                 .email(email)
-                .password("1234")
-                .nickname("SampleUser")
+                .password(faker.internet().password())
+                .nickname(faker.name().name())
+                .pino(pino)
                 .role(MemberRole.USER)
                 .build();
         Long mno = memberService.register(memberDTO);
@@ -52,19 +71,30 @@ public class MemberServiceTests {
 
     @Test
     public void testModify() {
+
+        ProfileImageDTO imageDTO = ProfileImageDTO.builder()
+                .fileName("MODIFIED_IMAGE.png")
+                .build();
+        Long pino = profileImageService.register(imageDTO);
+        log.info(profileImageService.get(pino));
+
         Long mno = 1L;
+        MemberDTO result = memberService.get(mno);
+
         MemberDTO memberDTO = MemberDTO.builder()
                 .mno(mno)
                 .email("Modified@example.com")
                 .password("NewPassword")
                 .nickname("ModifiedUser")
+                .pino(pino)
                 .social(true)
                 .role(MemberRole.MANAGER)
                 .build();
         memberService.modify(memberDTO);
 
-        MemberDTO result = memberService.get(mno);
-        log.info(result);
+        MemberDTO modifiedResult = memberService.get(mno);
+        Assertions.assertNotEquals(result, modifiedResult);
+        log.info(modifiedResult);
     }
 
     @Test
@@ -72,7 +102,7 @@ public class MemberServiceTests {
         String email = "sample@example.com";
         Long mno = memberService.getMno(email);
         memberService.remove(mno);
-        Assertions.assertThrows(MemberServiceException.class, () -> memberService.get(mno));
+        Assertions.assertThrows(CustomServiceException.class, () -> memberService.get(mno));
     }
 
 }

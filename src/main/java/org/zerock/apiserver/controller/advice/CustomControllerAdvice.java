@@ -6,7 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.zerock.apiserver.util.CustomJWTException;
-import org.zerock.apiserver.util.MemberServiceException;
+import org.zerock.apiserver.util.CustomServiceException;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,8 +30,8 @@ public class CustomControllerAdvice {
         return ResponseEntity.ok().body(Map.of("error", msg));
     }
 
-    @ExceptionHandler(MemberServiceException.class)
-    protected ResponseEntity<?> handleMemberServiceException(MemberServiceException e) {
+    @ExceptionHandler(CustomServiceException.class)
+    protected ResponseEntity<?> handleMemberServiceException(CustomServiceException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
     }
 

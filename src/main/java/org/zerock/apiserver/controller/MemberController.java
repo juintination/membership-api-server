@@ -19,32 +19,34 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/{mno}")
     public MemberDTO get(@PathVariable("mno") Long mno) {
         return memberService.get(mno);
     }
 
     @PostMapping("/")
-    public Map<String, Long> register(@RequestBody MemberDTO dto) throws Exception {
+    public Map<String, Long> register(@RequestBody MemberDTO dto) {
         long mno = memberService.register(dto);
         return Map.of("MNO", mno);
     }
 
     @PutMapping("/{mno}")
-    public Map<String, String> modify(@PathVariable("mno") Long mno, @RequestBody MemberDTO dto) throws Exception {
+    @PreAuthorize("#mno == authentication.principal.mno")
+    public Map<String, String> modify(@PathVariable("mno") Long mno, @RequestBody MemberDTO dto) {
         dto.setMno(mno);
         memberService.modify(dto);
         return Map.of("RESULT", "SUCCESS");
     }
 
     @DeleteMapping("/{mno}")
+    @PreAuthorize("#mno == authentication.principal.mno")
     public Map<String, String> remove(@PathVariable("mno") Long mno) {
         memberService.remove(mno);
         return Map.of("RESULT", "SUCCESS");
     }
 
-    @PostMapping("/checkPassword")
+    @PostMapping("/check/password")
+    @PreAuthorize("#dto.mno == authentication.principal.mno")
     public Map<String, String> checkPassword(@RequestBody MemberDTO dto) {
         memberService.checkPassword(dto.getMno(), dto.getPassword());
         return Map.of("RESULT", "SUCCESS");

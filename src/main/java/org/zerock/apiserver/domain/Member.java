@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString
+@ToString(exclude = "profileImage")
 public class Member {
 
     @Id
@@ -28,6 +28,10 @@ public class Member {
     @Builder.Default
     private MemberRole memberRole = MemberRole.USER;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_id")
+    private ProfileImage profileImage;
+
     public void changeRole(MemberRole memberRole) {
         this.memberRole = memberRole;
     }
@@ -38,6 +42,10 @@ public class Member {
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void changeProfileImage(ProfileImage profileImage) {
+        this.profileImage = profileImage;
     }
 
     public void changePassword(String password) {

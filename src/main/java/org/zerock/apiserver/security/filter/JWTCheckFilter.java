@@ -16,15 +16,13 @@ import org.zerock.apiserver.util.JWTUtil;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Log4j2
 public class JWTCheckFilter extends OncePerRequestFilter {
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
 
         // Preflight 요청은 체크하지 않음
         if (request.getMethod().equals("OPTIONS")) {
@@ -34,9 +32,16 @@ public class JWTCheckFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         log.info("check uri.............." + path);
 
-        // member 관련 경로의 호출은 체크하지 않음
-        if (path.startsWith("/api/member/")) {
-            return true;
+        if (request.getMethod().equals("POST")) {
+            if (path.equals("/api/member/") || path.equals("/api/member/login")) {
+                return true;
+            }
+        } else if (request.getMethod().equals("GET")) {
+            if (path.startsWith("/api/member/")) {
+                return true;
+            } else if (path.startsWith("/api/profiles/image/view/")) {
+                return true;
+            }
         }
 
         return false;

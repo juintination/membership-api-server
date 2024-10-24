@@ -10,7 +10,7 @@ import org.zerock.apiserver.domain.MemberRole;
 @NoArgsConstructor
 public class MemberDTO {
 
-    private Long mno;
+    private Long mno, pino;
 
     private String email;
 
