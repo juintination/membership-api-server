@@ -10,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.zerock.apiserver.domain.MemberRole;
 import org.zerock.apiserver.dto.MemberDTO;
 import org.zerock.apiserver.dto.ProfileImageDTO;
+import org.zerock.apiserver.util.CustomServiceException;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @SpringBootTest
@@ -69,6 +71,13 @@ public class ProfileImageServiceTests {
         ProfileImageDTO profileImageDTO = profileImageService.get(pino);
         Assertions.assertNotNull(profileImageDTO);
         log.info(profileImageDTO);
+    }
+
+    @Test
+    public void testRemove() {
+        Long pino = 1L;
+        profileImageService.remove(pino);
+        Assertions.assertThrows(CustomServiceException.class, () -> profileImageService.get(pino));
     }
 
 }

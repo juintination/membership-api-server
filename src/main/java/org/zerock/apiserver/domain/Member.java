@@ -56,4 +56,8 @@ public class Member {
         this.social = social;
     }
 
+    public void removeMemberAssociation() {
+        this.profileImage = null;
+    }
+
 }

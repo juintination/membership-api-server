@@ -38,11 +38,11 @@ public class ProfileImageServiceImpl implements ProfileImageService {
     }
 
     @Override
-    public void remove(Long ino) {
-        if (!profileImageRepository.existsById(ino)) {
-            throw new CustomServiceException("NOT_EXIST_IMAGE");
-        }
-        profileImageRepository.deleteById(ino);
+    public void remove(Long pino) {
+        ProfileImage profileImage = profileImageRepository.findById(pino)
+                .orElseThrow(() -> new CustomServiceException("NOT_EXIST_IMAGE"));
+        profileImage.getMember().removeMemberAssociation();
+        profileImageRepository.delete(profileImage);
     }
 
     @Override
