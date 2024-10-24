@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.zerock.apiserver.domain.Member;
 import org.zerock.apiserver.domain.ProfileImage;
 import org.zerock.apiserver.dto.ProfileImageDTO;
-import org.zerock.apiserver.repository.MemberRepository;
 import org.zerock.apiserver.repository.ProfileImageRepository;
 import org.zerock.apiserver.util.CustomServiceException;
 
@@ -16,8 +15,6 @@ import org.zerock.apiserver.util.CustomServiceException;
 public class ProfileImageServiceImpl implements ProfileImageService {
 
     private final ProfileImageRepository profileImageRepository;
-
-    private final MemberRepository memberRepository;
 
     @Override
     public ProfileImageDTO get(Long pino) {
@@ -52,13 +49,9 @@ public class ProfileImageServiceImpl implements ProfileImageService {
             throw new NullPointerException();
         }
 
-        Object result = memberRepository.getMemberByMno(profileImageDTO.getMno());
-        if (result == null) {
-            throw new CustomServiceException("NOT_EXIST_MEMBER");
-        }
-
-        Object[] arr = (Object[]) result;
-        Member member = (Member) arr[0];
+        Member member = Member.builder()
+                .mno(profileImageDTO.getMno())
+                .build();
 
         return ProfileImage.builder()
                 .pino(profileImageDTO.getPino())
