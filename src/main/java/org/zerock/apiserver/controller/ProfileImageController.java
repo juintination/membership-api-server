@@ -47,7 +47,7 @@ public class ProfileImageController {
         profileImageDTO.setFileName(uploadFileName);
         log.info("-------------------------------------");
         log.info(uploadFileName);
-        Long ino = profileImageService.register(profileImageDTO);
+        Long pino = profileImageService.register(profileImageDTO);
 
         try {
             Thread.sleep(2000);
@@ -55,7 +55,7 @@ public class ProfileImageController {
             throw new RuntimeException(e);
         }
 
-        return Map.of("ino", ino);
+        return Map.of("pino", pino);
     }
 
     @DeleteMapping("/{pino}")
